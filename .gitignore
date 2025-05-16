@@ -1,0 +1,13 @@
+#This file tells Git which files and folders to ignore (not track)
+#Examples of files to ignore: log files, temporary files, hidden files, personal files, OS/editor files
+# READ MORE HERE https://www.w3schools.com/git/git_ignore.asp
+
+.venv
+
+**/__pycache__/ 
+**/*.py[cod]
+
+.env 
+.env.local
+
+.DS_Store
