@@ -11,3 +11,6 @@
 .env.local
 
 .DS_Store
+
+test.pdf
+test.py
