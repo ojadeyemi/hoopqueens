@@ -40,7 +40,10 @@ Welcome! This project is for **HoopQueens** (a Canadian women's basketball leagu
 1. **Clone this repo**
 
    ```bash
-   git clone <repo-url>
+   # first clone the repo to your local computer
+   git clone https://github.com/ojadeyemi/hoopqueens.git
+
+   # then navigate to the folder
    cd hoopqueens
    ```
 
@@ -77,7 +80,7 @@ Welcome! This project is for **HoopQueens** (a Canadian women's basketball leagu
 
 ## 🗄️ Database (SQLite)
 
-- Data is stored in a local `boxscores.sqlite` file.
+- Data is stored in a local `hoopqueens.sqlite` file.
 - **SQLModel** is used as an ORM (built on SQLAlchemy).
 - You can query data using either **raw SQL** or **SQLModel**.
 
@@ -86,7 +89,7 @@ Welcome! This project is for **HoopQueens** (a Canadian women's basketball leagu
 ```python
 import sqlite3
 
-conn = sqlite3.connect("boxscores.sqlite")
+conn = sqlite3.connect("hoopqueens.sqlite")
 cursor = conn.cursor()
 cursor.execute("SELECT name, points FROM player")
 players = cursor.fetchall()
@@ -99,7 +102,7 @@ conn.close()
 ```python
 from sqlmodel import SQLModel, Session, select, create_engine, Field
 
-engine = create_engine("sqlite:///boxscores.sqlite")
+engine = create_engine("sqlite:///hoopqueens.sqlite")
 
 class Player(SQLModel, table=True):
       id: int | None = Field(default=None, primary_key=True)

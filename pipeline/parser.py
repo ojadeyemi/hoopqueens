@@ -2,8 +2,10 @@ import base64
 import os
 
 from openai import APIError, AuthenticationError, OpenAI, RateLimitError
+from sqlmodel import Session, select
 
-from db.models import GameData
+from db.database import engine
+from db.models import GameData, Player, Team
 
 
 def get_openai_api_key() -> str:
@@ -26,8 +28,42 @@ def encode_pdf(file_path: str) -> str:
         raise RuntimeError(f"Failed to encode PDF: {str(e)}")
 
 
+def get_team_mappings() -> dict[str, int]:
+    """Get mapping of team names to IDs from database"""
+    mapping = {}
+    try:
+        with Session(engine) as session:
+            teams = session.exec(select(Team)).all()
+            for team in teams:
+                if team.name:
+                    mapping[team.name.lower()] = team.id
+                if team.abbreviation:
+                    mapping[team.abbreviation.lower()] = team.id
+    except Exception as e:
+        print(f"Warning: Failed to get team mappings: {str(e)}")
+    return mapping
+
+
+def get_player_mappings() -> dict[str, dict]:
+    """Get mapping of player names to IDs from database"""
+    mapping = {}
+    try:
+        with Session(engine) as session:
+            players = session.exec(select(Player)).all()
+            for player in players:
+                if player.name:
+                    mapping[player.name.lower()] = {"id": player.id, "team_id": player.team_id}
+    except Exception as e:
+        print(f"Warning: Failed to get player mappings: {str(e)}")
+    return mapping
+
+
+team_ids = get_team_mappings()
+player_ids = get_player_mappings()
+
+
 def parse_game_pdf(pdf_file_path: str) -> GameData:
-    """Extract structured data from basketball box score PDF"""
+    """Extract box score statistics from basketball PDF"""
     # Encode PDF
     try:
         base64_string = encode_pdf(pdf_file_path)
@@ -41,16 +77,26 @@ def parse_game_pdf(pdf_file_path: str) -> GameData:
     except ValueError as e:
         raise ValueError(str(e))
 
-    # Parse PDF with OpenAI
+    # Parse box scores with OpenAI
     try:
-        system_prompt = """
-        Extract complete basketball game data from the box score PDF.
-        Analyze thoroughly and extract ALL game details, team statistics, and player statistics.
+        system_prompt = f"""
+        Extract ONLY the box score statistics from the basketball PDF.
+        Focus on team statistics and player statistics ONLY.
+        Do NOT extract or include game information (game number, date, time, etc.).
         Be precise with all statistical data and follow the provided schema exactly.
+
+        IMPORTANT FORMAT REQUIREMENTS:
+        - Team IDs must use these specific values: {team_ids}
+        - Player IDs must use these specific values: {player_ids}
+        - All percentages must be between 0 and 1 (e.g., 0.545 for 54.5%)
+        - Ensure all numerical fields have appropriate values (no strings in number fields)
+        - For missing statistics, use 0 for numerical values and null for optional text fields
+
+        The output must strictly follow the GameData schema with ONLY team_box_scores and player_box_scores.
         """
 
         completion = client.beta.chat.completions.parse(
-            model="gpt-4o-2024-08-06",
+            model="gpt-4.1-mini-2025-04-14",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {
@@ -63,7 +109,7 @@ def parse_game_pdf(pdf_file_path: str) -> GameData:
                                 "file_data": f"data:application/pdf;base64,{base64_string}",
                             },
                         },
-                        {"type": "text", "text": "Extract all game data in structured format."},
+                        {"type": "text", "text": "Extract team and player statistics only."},
                     ],
                 },
             ],
@@ -75,7 +121,7 @@ def parse_game_pdf(pdf_file_path: str) -> GameData:
         if data:
             return data
         else:
-            raise ValueError("Failed to parse game data from PDF.")
+            raise ValueError("Failed to parse box score data from PDF.")
 
     except AuthenticationError:
         raise ValueError("Invalid OpenAI API key.")

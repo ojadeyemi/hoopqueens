@@ -3,30 +3,29 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from sqlmodel import Session, SQLModel, create_engine, inspect
+from sqlmodel import Session, SQLModel, create_engine, inspect, select
 
 from .models import Game, GameData, PlayerBoxScore, TeamBoxScore
 
-# Database settings
-DATABASE_URL = "sqlite:///db/basketball_stats.db"
-DATABASE_PATH = "db/basketball_stats.db"
+DATABASE_URL = "sqlite:///hoopqueens.sqlite"
+DATABASE_PATH = "hoopqueens.sqlite"
 SNAPSHOT_DIR = "snapshots"
 engine = create_engine(DATABASE_URL)
 
 
 def ensure_directories():
-    """Create needed directories if they don't exist"""
+    """Create needed directories"""
     Path("db").mkdir(exist_ok=True)
     Path(SNAPSHOT_DIR).mkdir(exist_ok=True)
 
 
 def create_db_snapshot():
-    """Save current database state before changes"""
+    """Save database state before changes"""
     if not os.path.exists(DATABASE_PATH):
         return
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    snapshot_path = f"{SNAPSHOT_DIR}/basketball_stats_{timestamp}.db"
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    snapshot_path = f"{SNAPSHOT_DIR}/hoopqueens_{timestamp}.sqlite"
 
     try:
         shutil.copy2(DATABASE_PATH, snapshot_path)
@@ -36,7 +35,7 @@ def create_db_snapshot():
 
 
 def create_tables():
-    """Create database tables if they don't exist"""
+    """Create database tables"""
     ensure_directories()
 
     try:
@@ -46,51 +45,66 @@ def create_tables():
         if not existing_tables:
             SQLModel.metadata.create_all(engine)
             print("Database tables created")
-        else:
-            print(f"Tables exist: {', '.join(existing_tables)}")
     except Exception as e:
         raise RuntimeError(f"Failed to create tables: {str(e)}")
 
 
-def validate_game_data(game_data: GameData):
-    """Validate data before saving"""
-    if not game_data.game:
-        raise ValueError("Game information missing")
-
-    if not game_data.team_box_scores or len(game_data.team_box_scores) < 2:
+def validate_box_score_data(box_score_data: GameData):
+    """Validate box score data before saving"""
+    if not box_score_data.team_box_scores or len(box_score_data.team_box_scores) < 2:
         raise ValueError("Team box scores missing or incomplete")
-
-    if not game_data.player_box_scores:
+    if not box_score_data.player_box_scores:
         raise ValueError("Player box scores missing")
 
 
-def save_game_data(game_data: GameData):
-    """Save game data to database with validation"""
-    validate_game_data(game_data)
+def parse_date(date_str):
+    """Parse date in multiple formats"""
+    formats = [
+        "%Y-%m-%d",
+        "%a %d %b %Y",
+        "%d/%m/%Y",
+        "%m/%d/%Y",
+    ]
+
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+
+    raise ValueError(f"Unable to parse date: {date_str}")
+
+
+def save_game_data(sql_engine, game_id: int, box_score_data: GameData):
+    """Save box score data to an existing game in the database"""
+    validate_box_score_data(box_score_data)
     create_db_snapshot()
 
     try:
-        with Session(engine) as session:
-            # Add game
-            game = Game(**game_data.game.model_dump())
-            session.add(game)
-            session.flush()
-            game_id = game.id
+        with Session(sql_engine) as session:
+            # Get existing game or raise error
+            game = session.exec(select(Game).where(Game.id == game_id)).first()
+            if not game:
+                raise ValueError(f"Game with ID {game_id} not found")
 
-            # Add team box scores
-            for team_data in game_data.team_box_scores:
+            # Check if box scores already exist
+            existing_team_scores = session.exec(select(TeamBoxScore).where(TeamBoxScore.game_id == game_id)).first()
+
+            if existing_team_scores:
+                return "Game already has statistics. No changes made."
+
+            # Add new team box scores
+            for team_data in box_score_data.team_box_scores:
                 team_data_dict = team_data.model_dump()
                 team_data_dict["game_id"] = game_id
                 try:
                     team_data_dict["team_id"] = int(team_data_dict["team_id"])
                 except (ValueError, TypeError):
                     raise ValueError(f"Invalid team_id: {team_data_dict['team_id']}")
+                session.add(TeamBoxScore(**team_data_dict))
 
-                team_box_score = TeamBoxScore(**team_data_dict)
-                session.add(team_box_score)
-
-            # Add player box scores
-            for player_data in game_data.player_box_scores:
+            # Add new player box scores
+            for player_data in box_score_data.player_box_scores:
                 player_data_dict = player_data.model_dump()
                 player_data_dict["game_id"] = game_id
                 try:
@@ -98,13 +112,12 @@ def save_game_data(game_data: GameData):
                     player_data_dict["player_id"] = int(player_data_dict["player_id"])
                 except (ValueError, TypeError):
                     raise ValueError(
-                        f"Invalid ID: team_id={player_data_dict['team_id']}, player_id={player_data_dict['player_id']}"
+                        f"Invalid ID: team={player_data_dict['team_id']}, player={player_data_dict['player_id']}"
                     )
-
-                player_box_score = PlayerBoxScore(**player_data_dict)
-                session.add(player_box_score)
+                session.add(PlayerBoxScore(**player_data_dict))
 
             session.commit()
-            print(f"Game data saved (Game ID: {game_id})")
+            print(f"Box score data saved for Game ID: {game_id}")
+            return f"Box score data saved for Game ID: {game_id}"
     except Exception as e:
         raise RuntimeError(f"Failed to save game data: {str(e)}")
