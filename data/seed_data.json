@@ -1,0 +1,139 @@
+{
+  "teams": [
+    {
+      "name": "York Lions",
+      "abbreviation": "YKN",
+      "bio": "York University basketball team established in 2020",
+      "coach": "Coach York",
+      "general_manager": "York GM",
+      "players": [
+        {
+          "name": "Bill Bill",
+          "jersey_number": 1,
+          "position": "G",
+          "school": "York University",
+          "birth_date": "1998-05-15",
+          "nationality": "Canada"
+        },
+        {
+          "name": "John Man",
+          "jersey_number": 3,
+          "position": "F", 
+          "school": "York University",
+          "birth_date": "1999-03-22",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Forward Forward",
+          "jersey_number": 9,
+          "position": "F",
+          "school": "York University", 
+          "birth_date": "2000-08-10",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Center Center",
+          "jersey_number": 10,
+          "position": "C",
+          "school": "York University",
+          "birth_date": "1997-11-30",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Victory Victory",
+          "jersey_number": 11,
+          "position": "G",
+          "school": "York University",
+          "birth_date": "2001-01-05",
+          "nationality": "Canada"
+        }
+      ]
+    },
+    {
+      "name": "Union Dutchmen", 
+      "abbreviation": "UNN",
+      "bio": "Union College basketball team established in 2019",
+      "coach": "Coach Union",
+      "general_manager": "Union GM",
+      "players": [
+        {
+          "name": "UK Joey",
+          "jersey_number": 4,
+          "position": "G",
+          "school": "Union College",
+          "birth_date": "1998-07-12",
+          "nationality": "Canada"
+        },
+        {
+          "name": "UK Juh", 
+          "jersey_number": 5,
+          "position": "F",
+          "school": "Union College",
+          "birth_date": "1999-09-08",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Big Boy",
+          "jersey_number": 6,
+          "position": "F",
+          "school": "Union College",
+          "birth_date": "2000-04-17",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Nice Nice",
+          "jersey_number": 7,
+          "position": "C",
+          "school": "Union College",
+          "birth_date": "1997-12-03",
+          "nationality": "Canada"
+        },
+        {
+          "name": "Real Real",
+          "jersey_number": 8,
+          "position": "G", 
+          "school": "Union College",
+          "birth_date": "2001-02-28",
+          "nationality": "Canada"
+        }
+      ]
+    }
+  ],
+  "games": [
+    {
+      "game_number": 1,
+      "date": "2025-05-03",
+      "start_time": "2025-05-03 14:30:00",
+      "location": "UofT Gymnasium",
+      "attendance": 1200
+    },
+    {
+      "game_number": 2,
+      "date": "2025-05-10", 
+      "start_time": "2025-05-10 19:00:00",
+      "location": "Mattamy Athletic Centre",
+      "attendance": 950
+    },
+    {
+      "game_number": 3,
+      "date": "2025-05-17",
+      "start_time": "2025-05-17 16:15:00", 
+      "location": "UofT Gymnasium",
+      "attendance": 1100
+    },
+    {
+      "game_number": 4,
+      "date": "2025-05-24",
+      "start_time": "2025-05-24 14:00:00",
+      "location": "Mattamy Athletic Centre", 
+      "attendance": 1050
+    },
+    {
+      "game_number": 5,
+      "date": "2025-05-31",
+      "start_time": "2025-05-31 19:30:00",
+      "location": "UofT Gymnasium",
+      "attendance": 1300
+    }
+  ]
+}

@@ -168,4 +168,5 @@ def get_players():
 ---
 
 **Next steps:**  
-Explore the database, then build and test your FastAPI endpoints to serve the data!
+Explore the database, then build and test your FastAPI endpoints to serve the data to a simple website!
+Go to [app folder](app/README.md)
