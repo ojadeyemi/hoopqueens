@@ -1,6 +1,6 @@
 # 🏀 HoopQueens Box Score Pipeline (Dev Guide)
 
-Welcome! This project is for **HoopQueens** (a Canadian women's basketball league).  
+This project is for **HoopQueens** (a Canadian women's basketball league).  
 **Goal:** Build a system to extract box score data from PDFs, save it to a database, and serve it via a FastAPI backend for use by any app, dashboard, or service.
 
 ---
