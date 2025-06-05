@@ -76,6 +76,14 @@ This project is for **HoopQueens** (a Canadian women's basketball league).
    pip install -r requirements.txt
    ```
 
+5. **Create a `.env` file**
+
+   In the project root, create a file named `.env` and add the following line:
+
+   ```
+   PYTHONPATH=./
+   ```
+
 ---
 
 ## 🗄️ Database (SQLite)

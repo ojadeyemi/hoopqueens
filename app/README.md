@@ -1,4 +1,8 @@
-# Project Overview
+> **Note:** Before getting started, make sure you have read the main README ([../README.md](../README.md)), especially the **"Prerequisites"** section. Completing all prerequisites is essential for a smooth setup and to avoid common issues. This project contains both the backend API (FastAPI) and the web UI, allowing you to interact with HoopQueens through your browser. Reviewing the main README and following all setup steps will help you get the app running quickly and troubleshoot any problems.
+
+# App Overview
+
+This project combines the backend API (in the `api` folder, built with FastAPI) and the web-based user interface (in the `web` folder). The API handles all data processing and business logic, while the web UI lets users interact with the application easily.
 
 This project contains both the API and web UI logic for HoopQueens.
 
@@ -31,7 +35,7 @@ app = FastAPI()
 
 @app.get("/hello")
 def read_hello():
-    return {"message": "Hello, world!"}
+  return {"message": "Hello, world!"}
 ```
 
 ## API Documentation

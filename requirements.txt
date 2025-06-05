@@ -1,4 +1,8 @@
+#for api
+fastapi==0.115.12
+sqlmodel==0.0.24
+
+#for pipeline
 openai==1.79.0
-sqlmodel==0.024
 streamlit==1.45.1
-streamlit-pdf-viewer==0.023
+streamlit-pdf-viewer==0.0.23
