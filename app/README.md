@@ -42,8 +42,14 @@ def read_hello():
 
 When you run the FastAPI server, you can view and test the API docs at:
 
-- [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI)
-- [http://localhost:8000/redoc](http://localhost:8000/redoc) (ReDoc)
+To start the backend API server, run:
+
+```bash
+fastapi dev app/main.py
+```
+
+This will launch the API at [http://localhost:8000](http://localhost:8000).  
+You can test endpoints in your browser at [http://localhost:8000/docs](http://localhost:8000/docs).
 
 Just open one of these links in your browser after starting the server.
 
@@ -83,4 +89,4 @@ Just open one of these links in your browser after starting the server.
 
 ## Viewing the Database
 
-To view the data in `hoopqueens.db`, install the [SQLite Viewer extension for VS Code](https://marketplace.visualstudio.com/items?itemName=alexcvzz.vscode-sqlite). After installing, open VS Code, find the `hoopqueens.db` file in your project, and click on it to browse and inspect the database tables and data.
+To view the data in `hoopqueens.db`, install the [SQLite Viewer extension for VS Code](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer). After installing, open VS Code, find the `hoopqueens.db` file in your project, and click on it to browse and inspect the database tables and data.
