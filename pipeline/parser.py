@@ -1,61 +1,62 @@
 import base64
 import os
+from typing import Tuple
 
-from openai import APIError, AuthenticationError, OpenAI, RateLimitError
+from openai import AuthenticationError, OpenAI, OpenAIError, RateLimitError
 from sqlmodel import Session, select
 
 from db.database import engine
 from db.models import GameData, Player, Team
 
+ALLOWED_EXTENSIONS = {".pdf", ".jpg", ".jpeg", ".png"}
+
 
 def get_openai_api_key() -> str:
-    """Get OpenAI API key from environment"""
+    """Get API key from environment."""
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        raise ValueError("OpenAI API key not found. Set OPENAI_API_KEY environment variable.")
+        raise ValueError("OPENAI_API_KEY environment variable is not set.")
     return api_key
 
 
-def encode_pdf(file_path: str) -> str:
-    """Encode PDF file to base64 string"""
-    try:
-        with open(file_path, "rb") as f:
-            data = f.read()
-        return base64.b64encode(data).decode("utf-8")
-    except FileNotFoundError:
-        raise FileNotFoundError(f"PDF file not found: {file_path}")
-    except Exception as e:
-        raise RuntimeError(f"Failed to encode PDF: {str(e)}")
+def encode_file(file_path: str) -> Tuple[str, str]:
+    """Encode file as base64 with MIME type."""
+    ext = os.path.splitext(file_path)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"Unsupported file type: {ext}")
+    mime_types = {
+        ".pdf": "application/pdf",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
+    with open(file_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode("utf-8"), mime_types[ext]
 
 
 def get_team_mappings() -> dict[str, int]:
-    """Get mapping of team names to IDs from database"""
+    """Get team name/abbr to ID mapping."""
     mapping = {}
-    try:
-        with Session(engine) as session:
-            teams = session.exec(select(Team)).all()
-            for team in teams:
-                if team.name:
-                    mapping[team.name.lower()] = team.id
-                if team.abbreviation:
-                    mapping[team.abbreviation.lower()] = team.id
-    except Exception as e:
-        print(f"Warning: Failed to get team mappings: {str(e)}")
+    with Session(engine) as session:
+        for team in session.exec(select(Team)).all():
+            if team.name:
+                mapping[team.name.lower()] = team.id
+            if team.abbreviation:
+                mapping[team.abbreviation.lower()] = team.id
     return mapping
 
 
 def get_player_mappings() -> dict[str, dict]:
-    """Get mapping of player names to IDs from database"""
+    """Get player media_name to ID and team ID mapping."""
     mapping = {}
-    try:
-        with Session(engine) as session:
-            players = session.exec(select(Player)).all()
-            for player in players:
-                if player.media_name:
-                    mapping[player.media_name.lower()] = {"id": player.id, "team_id": player.team_id}
-
-    except Exception as e:
-        print(f"Warning: Failed to get player mappings: {str(e)}")
+    with Session(engine) as session:
+        for player in session.exec(select(Player)).all():
+            if player.media_name:
+                mapping[player.media_name.lower()] = {
+                    "id": player.id,
+                    "team_id": player.team_id,
+                }
     return mapping
 
 
@@ -63,40 +64,23 @@ team_ids = get_team_mappings()
 player_ids = get_player_mappings()
 
 
-def parse_game_pdf(pdf_file_path: str) -> GameData:
-    """Extract box score statistics from basketball PDF"""
-    # Encode PDF
+def parse_game_file(file_path: str) -> GameData:
+    """Extract and validate game stats from file using structured outputs."""
     try:
-        base64_string = encode_pdf(pdf_file_path)
+        base64_data, mime_type = encode_file(file_path)
     except Exception as e:
-        raise RuntimeError(f"Failed to process PDF: {str(e)}")
+        raise RuntimeError(f"File encoding failed: {e}")
 
-    # Initialize OpenAI client
     try:
-        api_key = get_openai_api_key()
-        client = OpenAI(api_key=api_key)
-    except ValueError as e:
-        raise ValueError(str(e))
-
-    # Parse box scores with OpenAI
-    try:
-        system_prompt = f"""
-        Extract ONLY the box score statistics from the basketball PDF.
-        Focus on team statistics and player statistics ONLY.
-        Do NOT extract or include game information (game number, date, time, etc.).
-        Be precise with all statistical data and follow the provided schema exactly.
-
-        IMPORTANT FORMAT REQUIREMENTS:
-        - Team IDs must use these specific values: {team_ids}
-        - Player IDs must use these specific values: {player_ids}
-        - For player_name field, use the media_name format (LastInitial. FirstName) when possible
-        - All percentages must be between 0 and 1 (e.g., 0.545 for 54.5%)
-        - Ensure all numerical fields have appropriate values (no strings in number fields)
-        - For missing statistics, use 0 for numerical values and null for optional text fields
-
-        The output must strictly follow the GameData schema with ONLY team_box_scores and player_box_scores.
-        """
-        print(system_prompt)  # Debugging: print the system prompt
+        client = OpenAI(api_key=get_openai_api_key())
+        system_prompt = (
+            f"Extract ONLY team and player statistics from the uploaded file.\n"
+            f"- Use these team IDs: {team_ids}\n"
+            f"- Use these player IDs: {player_ids}\n"
+            "- Percentages must be between 0 and 1\n"
+            "- Use 0 for missing numeric fields, null for missing optional text\n"
+            "- Return exactly the GameData schema (no extra fields)\n"
+        )
 
         completion = client.beta.chat.completions.parse(
             model="gpt-4.1-mini-2025-04-14",
@@ -106,31 +90,29 @@ def parse_game_pdf(pdf_file_path: str) -> GameData:
                     "role": "user",
                     "content": [
                         {
-                            "type": "file",
-                            "file": {
-                                "filename": "game_stats.pdf",
-                                "file_data": f"data:application/pdf;base64,{base64_string}",
-                            },
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{mime_type};base64,{base64_data}"},
                         },
-                        {"type": "text", "text": "Extract team and player statistics only."},
+                        {"type": "text", "text": "Extract only team and player statistics."},
                     ],
                 },
             ],
             response_format=GameData,
         )
 
-        data = completion.choices[0].message.parsed
-
-        if data:
-            return data
+        msg = completion.choices[0].message
+        if msg.parsed:
+            return msg.parsed
+        elif msg.refusal:
+            raise RuntimeError(f"Model refused to comply: {msg.refusal}")
         else:
-            raise ValueError("Failed to parse box score data from PDF.")
+            raise RuntimeError("Received no data or refusal.")
 
     except AuthenticationError:
         raise ValueError("Invalid OpenAI API key.")
     except RateLimitError:
-        raise RuntimeError("OpenAI API rate limit exceeded. Try again later.")
-    except APIError as e:
-        raise RuntimeError(f"OpenAI API error: {str(e)}")
+        raise RuntimeError("OpenAI API rate limit exceeded.")
+    except OpenAIError as e:
+        raise RuntimeError(f"OpenAI API error: {e}")
     except Exception as e:
-        raise RuntimeError(f"Failed to extract data: {str(e)}")
+        raise RuntimeError(f"Unexpected error: {e}")
