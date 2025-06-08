@@ -51,8 +51,9 @@ def get_player_mappings() -> dict[str, dict]:
         with Session(engine) as session:
             players = session.exec(select(Player)).all()
             for player in players:
-                if player.name:
-                    mapping[player.name.lower()] = {"id": player.id, "team_id": player.team_id}
+                if player.media_name:
+                    mapping[player.media_name.lower()] = {"id": player.id, "team_id": player.team_id}
+
     except Exception as e:
         print(f"Warning: Failed to get player mappings: {str(e)}")
     return mapping
@@ -88,12 +89,14 @@ def parse_game_pdf(pdf_file_path: str) -> GameData:
         IMPORTANT FORMAT REQUIREMENTS:
         - Team IDs must use these specific values: {team_ids}
         - Player IDs must use these specific values: {player_ids}
+        - For player_name field, use the media_name format (LastInitial. FirstName) when possible
         - All percentages must be between 0 and 1 (e.g., 0.545 for 54.5%)
         - Ensure all numerical fields have appropriate values (no strings in number fields)
         - For missing statistics, use 0 for numerical values and null for optional text fields
 
         The output must strictly follow the GameData schema with ONLY team_box_scores and player_box_scores.
         """
+        print(system_prompt)  # Debugging: print the system prompt
 
         completion = client.beta.chat.completions.parse(
             model="gpt-4.1-mini-2025-04-14",

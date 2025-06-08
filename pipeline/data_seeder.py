@@ -9,12 +9,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
+from game_service import GameService
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from db.models import Game, Player, PlayerBoxScore, Team, TeamBoxScore
-
-from .game_service import GameService
 
 
 class DataSeeder:
@@ -80,13 +79,15 @@ class DataSeeder:
                 teams_skipped += 1
                 continue
 
-            # Create new team
+            # Create new team with updated fields
             team = Team(
                 name=team_data["name"],
                 abbreviation=team_data["abbreviation"],
                 bio=team_data.get("bio", ""),
                 coach=team_data.get("coach", ""),
+                coach_bio=team_data.get("coach_bio", ""),  # NEW FIELD
                 general_manager=team_data.get("general_manager", ""),
+                general_manager_bio=team_data.get("general_manager_bio", ""),  # NEW FIELD
             )
             session.add(team)
             session.flush()  # Get team ID
@@ -95,8 +96,12 @@ class DataSeeder:
             # Add players for this team
             if "players" in team_data:
                 for player_data in team_data["players"]:
-                    # Check if player already exists using modern SQLModel
-                    statement = select(Player).where(Player.name == player_data["name"], Player.team_id == team.id)
+                    # Check if player already exists using new structure
+                    statement = select(Player).where(
+                        Player.first_name == player_data["first_name"],
+                        Player.last_name == player_data["last_name"],
+                        Player.team_id == team.id,
+                    )
                     existing_player = session.exec(statement).first()
 
                     if existing_player:
@@ -104,11 +109,15 @@ class DataSeeder:
 
                     player = Player(
                         team_id=team.id,  # type: ignore
-                        name=player_data["name"],
-                        jersey_number=player_data["jersey_number"],
-                        position=player_data["position"],
+                        first_name=player_data["first_name"],
+                        last_name=player_data["last_name"],
+                        media_name=player_data["media_name"],
+                        jersey_number=player_data.get("jersey_number"),
+                        position=player_data.get("position"),
                         school=player_data.get("school", ""),
-                        birth_date=self._parse_date(player_data["birth_date"]),  # type: ignore
+                        birth_date=self._parse_date(player_data.get("birth_date"))
+                        if player_data.get("birth_date")
+                        else None,  # type: ignore
                         nationality=player_data.get("nationality", ""),
                     )
                     session.add(player)
@@ -135,7 +144,9 @@ class DataSeeder:
                 date=self._parse_date(game_data["date"]),
                 start_time=self._parse_datetime(game_data["start_time"]),
                 location=game_data["location"],
-                attendance=game_data.get("attendance", 0),
+                home_team=game_data.get("home_team"),  # NEW FIELD
+                away_team=game_data.get("away_team"),  # NEW FIELD
+                attendance=game_data.get("attendance"),
             )
             session.add(game)
             games_added += 1
@@ -268,10 +279,23 @@ def create_data_seeder(game_service: GameService) -> DataSeeder:
 
 # CLI interface for seeding
 def main():
+    """
+    Command line interface for data seeding.
+    This function provides a command line interface to seed the database with initial data,
+    reset the database, or display database statistics. It accepts the following arguments:
+    - --file: Path to a JSON file containing seed data.
+    - --reset: Resets the database before seeding.
+    - --stats: Displays database statistics.
+    Example usage:
+        python data_seeder.py --file seed_data.json
+        python data_seeder.py --reset --file seed_data.json
+        python data_seeder.py --stats
+    Use --help to see all available options.
+    """
     """Command line interface for data seeding."""
     import argparse
 
-    from .game_service import create_game_service
+    from game_service import create_game_service
 
     parser = argparse.ArgumentParser(description="Seed database with initial data")
     parser.add_argument("--file", help="JSON file with seed data")
@@ -303,57 +327,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Example usage:
-"""
-# Create a game service and seeder
-from services.game_service import create_game_service
-from services.data_seeder import create_data_seeder
-
-game_service = create_game_service()
-seeder = create_data_seeder(game_service)
-
-# Example 1: Seed from dictionary
-data = {
-    "teams": [
-        {
-            "name": "Lakers",
-            "abbreviation": "LAL",
-            "coach": "Coach Smith",
-            "players": [
-                {
-                    "name": "Player One",
-                    "jersey_number": 23,
-                    "position": "PG",
-                    "birth_date": "1990-01-01"
-                }
-            ]
-        }
-    ],
-    "games": [
-        {
-            "game_number": 1,
-            "date": "2024-01-01",
-            "start_time": "2024-01-01 19:00",
-            "location": "Arena Name",
-            "attendance": 15000
-        }
-    ]
-}
-
-result = seeder.seed_from_dict(data)
-print(result)
-
-# Example 2: Seed from JSON file
-result = seeder.seed_from_file("path/to/seed_data.json")
-print(result)
-
-# Example 3: Get database statistics
-stats = seeder.get_database_stats()
-print(stats)
-
-# Example 4: Reset database (careful!)
-# result = seeder.reset_database()
-# print(result)
-"""

@@ -78,11 +78,11 @@ class StatsService:
             query = (
                 select(
                     PlayerBoxScore.player_id,
-                    PlayerBoxScore.player_name,
+                    PlayerBoxScore.media_name,  # CHANGED FROM player_name
                     func.avg(getattr(PlayerBoxScore, stat)).label("avg_stat"),
                     func.count(PlayerBoxScore.id).label("games_played"),
                 )
-                .group_by(PlayerBoxScore.player_id, PlayerBoxScore.player_name)
+                .group_by(PlayerBoxScore.player_id, PlayerBoxScore.media_name)  # CHANGED FROM player_name
                 .having(func.count(PlayerBoxScore.id) >= min_games)
                 .order_by(func.avg(getattr(PlayerBoxScore, stat)).desc())
             )
@@ -90,7 +90,11 @@ class StatsService:
             results = session.exec(query).all()
 
             return [
-                {"Player": r.player_name, f"Avg {stat.capitalize()}": round(r.avg_stat, 1), "Games": r.games_played}
+                {
+                    "Player": r.media_name,
+                    f"Avg {stat.capitalize()}": round(r.avg_stat, 1),
+                    "Games": r.games_played,
+                }  # CHANGED FROM r.player_name
                 for r in results
             ]
 
