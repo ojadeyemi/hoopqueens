@@ -17,7 +17,9 @@ class Team(SQLModel, table=True):
     abbreviation: str = SQLField(None, description="Team abbreviation")
     bio: str = SQLField(None, description="Team history")
     coach: str = SQLField(None, description="Head coach name")
+    coach_bio: str = SQLField(None, description="Head coach biography")
     general_manager: str = SQLField(None, description="GM name")
+    general_manager_bio: str = SQLField(None, description="GM biography")
 
     players: List["Player"] = Relationship(back_populates="team")
 
@@ -27,9 +29,11 @@ class Player(SQLModel, table=True):
 
     id: Optional[int] = SQLField(default=None, primary_key=True, description="Player ID")
     team_id: int = SQLField(foreign_key="team.id", description="Team reference")
-    name: str = SQLField(description="Player name")
-    jersey_number: int = SQLField(None, description="Jersey number")
-    position: str = SQLField(None, description="Position")
+    first_name: str = SQLField(description="Player first name")
+    last_name: str = SQLField(description="Player last name")
+    media_name: str = SQLField(description="Media display name (LastInitial. FirstName)")
+    jersey_number: Optional[int] = SQLField(None, description="Jersey number")
+    position: Optional[str] = SQLField(None, description="Position")
     school: Optional[str] = SQLField(None, description="Player's school")
     birth_date: Optional[str] = SQLField(None, description="Birth date")
     nationality: Optional[str] = SQLField(None, description="Nationality")
@@ -46,6 +50,8 @@ class Game(SQLModel, table=True):
     date: datetime = SQLField(description="Game date")
     start_time: datetime = SQLField(description="Start time")
     location: Optional[str] = SQLField(None, description="Venue")
+    home_team: Optional[str] = SQLField(None, description="Home team")
+    away_team: Optional[str] = SQLField(None, description="Away team")
     attendance: Optional[int] = SQLField(None, description="Spectator count")
 
     team_box_scores: List["TeamBoxScore"] = Relationship(back_populates="game")
@@ -114,7 +120,7 @@ class PlayerBoxScore(SQLModel, table=True):
     game_id: int = SQLField(foreign_key="game.id", description="Game reference")
     team_id: int = SQLField(foreign_key="team.id", description="Team reference")
     player_id: int = SQLField(foreign_key="player.id", description="Player reference")
-    player_name: str = SQLField(description="Player name")
+    media_name: str = SQLField(description="Player media name (FirstInitial. LastName)")
     minutes: float = SQLField(default=0, description="Minutes played")
 
     # Shooting stats
@@ -211,7 +217,7 @@ class PlayerBoxScoreModel(BaseModel):
 
     player_id: int = Field(description="Player reference")
     team_id: int = Field(description="Team reference")
-    player_name: str = Field(description="Player name")
+    media_name: str = Field(description="Player media name (LastInitial. FirstName)")
     minutes: float = Field(description="Minutes played, default to 0 if no minutes played")
 
     # Shooting stats

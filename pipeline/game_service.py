@@ -19,7 +19,7 @@ from db.models import Game, GameData, PlayerBoxScore, TeamBoxScore
 class GameService:
     """Service for managing game data and database operations."""
 
-    def __init__(self, database_url: str = "sqlite:///hoopqueens.sqlite"):
+    def __init__(self, database_url: str = "sqlite:///hoopqueens.db"):
         self.database_url = database_url
         self.database_path = database_url.replace("sqlite:///", "")
         self.snapshot_dir = "snapshots"
@@ -37,7 +37,7 @@ class GameService:
             return
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        snapshot_path = f"{self.snapshot_dir}/hoopqueens_{timestamp}.sqlite"
+        snapshot_path = f"{self.snapshot_dir}/hoopqueens_{timestamp}.db"
 
         try:
             shutil.copy2(self.database_path, snapshot_path)
@@ -200,7 +200,7 @@ class GameService:
 
 
 # Factory function for dependency injection
-def create_game_service(database_url: str = "sqlite:///hoopqueens.sqlite") -> GameService:
+def create_game_service(database_url: str = "sqlite:///hoopqueens.db") -> GameService:
     """Create and return a GameService instance."""
     service = GameService(database_url)
     service.create_tables()  # Ensure tables exist

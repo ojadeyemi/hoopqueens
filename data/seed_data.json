@@ -1,100 +1,406 @@
 {
   "teams": [
     {
-      "name": "York Lions",
-      "abbreviation": "YKN",
-      "bio": "York University basketball team established in 2020",
-      "coach": "Coach York",
-      "general_manager": "York GM",
+      "name": "Reign",
+      "abbreviation": "REI",
+      "bio": "A force of nature and a symbol of royalty. A play on rain and reign, this team embodies dominance, legacy, and power. Whether it's pouring buckets or commanding the court, Team Reign doesn't follow — they lead.",
+      "coach": "Ceejay Nofuente",
+      "coach_bio": "Ceejay Nofuente, first year head coach for Humber Polytechnic, formerly Humber College. Finished the OCAA season with a Silver medal at the provincial championships with a record of 17-3. Before coaching, I played four years with Humber college, going on to winning 4 provincial championships and 2 national championships. I then went on to play Professional Basketball overseas. I started my career in Denmark, followed by two seasons in Sweden, Germany and finishing my career in Slovakia.",
+      "general_manager": "Dakota Whyte",
+      "general_manager_bio": "Dakota Whyte is a former professional basketball player, youth Olympian, and standout D1 athlete at the University of Wisconsin. Her career has spanned the court and the corporate world, including a strategic role at Nike, where she blended sports, branding, and community impact. Now the Executive Director of the PS43 Foundation, Dakota leads programs that uplift underserved youth through sports and education. She also founded a sports philanthropy firm dedicated to harnessing the power of athletics for social change. An MBA graduate of Toronto Metropolitan University, she is a leading voice in athlete advocacy. She is committed to reshaping how sports serve communities. Her work continues to bridge performance, purpose, and impact—on and off the court.",
       "players": [
         {
-          "name": "Bill Bill",
-          "jersey_number": 1,
-          "position": "G",
-          "school": "York University",
-          "birth_date": "1998-05-15",
-          "nationality": "Canada"
+          "first_name": "Adebola",
+          "last_name": "Adeyeye",
+          "media_name": "A. Adeyeye",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "John Man",
-          "jersey_number": 3,
-          "position": "F", 
-          "school": "York University",
-          "birth_date": "1999-03-22",
-          "nationality": "Canada"
+          "first_name": "Danielle",
+          "last_name": "Garven",
+          "media_name": "D. Garven",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Forward Forward",
-          "jersey_number": 9,
-          "position": "F",
-          "school": "York University", 
-          "birth_date": "2000-08-10",
-          "nationality": "Canada"
+          "first_name": "Shailah",
+          "last_name": "Adams",
+          "media_name": "S. Adams",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Center Center",
-          "jersey_number": 10,
-          "position": "C",
-          "school": "York University",
-          "birth_date": "1997-11-30",
-          "nationality": "Canada"
+          "first_name": "Phoenix",
+          "last_name": "Gedeon",
+          "media_name": "P. Gedeon",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Victory Victory",
-          "jersey_number": 11,
-          "position": "G",
-          "school": "York University",
-          "birth_date": "2001-01-05",
-          "nationality": "Canada"
+          "first_name": "AJ",
+          "last_name": "Jacob",
+          "media_name": "A. Jacob",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Nicole",
+          "last_name": "Budd",
+          "media_name": "N. Budd",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Kia",
+          "last_name": "Watt",
+          "media_name": "K. Watt",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Lashae",
+          "last_name": "Dwyer",
+          "media_name": "L. Dwyer",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Bri",
+          "last_name": "Livingston",
+          "media_name": "B. Livingston",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         }
       ]
     },
     {
-      "name": "Union Dutchmen", 
-      "abbreviation": "UNN",
-      "bio": "Union College basketball team established in 2019",
-      "coach": "Coach Union",
-      "general_manager": "Union GM",
+      "name": "Tide",
+      "abbreviation": "TID",
+      "bio": "Power in motion. Team Tide moves with rhythm, fluidity, and force — building momentum that's consistent, powerful, and hard to contain. They don't chase momentum — they are momentum.",
+      "coach": "Christine Hyde",
+      "coach_bio": "Christine Hyde returns to Hoopqueens after serving as Head Coach in its inaugural season. A former NCAA Division I athlete at Texas Tech and a high draft camp pick for the San Antonio Silver Stars, she played professionally for seven years in top European leagues, including Belgium, France, and Turkey. She was the first female assistant coach for the KW Titans in NBL Canada men's professional league. She now serves as Associate Coach at the University of Waterloo and Head Coach of Team Ontario, preparing for this year's Canada Summer Games. A two-time Pro Invitational Head Coach, Christine has also contributed to Canada Basketball and the Ontario Basketball Association through the Central Performance Program, Jr. Academy, and NCAA Academy. Her return reflects her ongoing commitment to growing the game and empowering the next generation.",
+      "general_manager": "Audrey Ngongo",
+      "general_manager_bio": "Audrey Ngongo brings nearly two decades of coaching experience and a strong background in sports business to her new role as GM. She has coached at all levels, from Brook University, Niagara College, the University of Toronto's Development League, and with the Toronto Raptors Basketball Development Programs. Internationally, she led grassroots basketball initiatives, including creating physical education programs in Cuba. At Hoopqueens, Audrey has served as Assistant Coach, Head Coach—leading the team to a 2024 Championship—and now GM. Outside of coaching, Audrey has grown as a leader and advocate for women in sport. She also built a successful career in sports and entertainment, specializing in marketing and sponsorship. Audrey remains committed to creating inclusive, competitive spaces for women in basketball and driving the continued success of Hoopqueens.",
       "players": [
         {
-          "name": "UK Joey",
-          "jersey_number": 4,
-          "position": "G",
-          "school": "Union College",
-          "birth_date": "1998-07-12",
-          "nationality": "Canada"
+          "first_name": "Saleah",
+          "last_name": "Joseph",
+          "media_name": "S. Joseph",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "UK Juh", 
-          "jersey_number": 5,
-          "position": "F",
-          "school": "Union College",
-          "birth_date": "1999-09-08",
-          "nationality": "Canada"
+          "first_name": "Janika",
+          "last_name": "Griffith Wallace",
+          "media_name": "J. Griffith Wallace",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Big Boy",
-          "jersey_number": 6,
-          "position": "F",
-          "school": "Union College",
-          "birth_date": "2000-04-17",
-          "nationality": "Canada"
+          "first_name": "Shaunae",
+          "last_name": "Brown",
+          "media_name": "S. Brown",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Nice Nice",
-          "jersey_number": 7,
-          "position": "C",
-          "school": "Union College",
-          "birth_date": "1997-12-03",
-          "nationality": "Canada"
+          "first_name": "Nissa",
+          "last_name": "Sam-Grant",
+          "media_name": "N. Sam-Grant",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         },
         {
-          "name": "Real Real",
-          "jersey_number": 8,
-          "position": "G", 
-          "school": "Union College",
-          "birth_date": "2001-02-28",
-          "nationality": "Canada"
+          "first_name": "Fredlaine",
+          "last_name": "Verrier",
+          "media_name": "F. Verrier",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Summer",
+          "last_name": "Pahl",
+          "media_name": "S. Pahl",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Tineya",
+          "last_name": "Hylton",
+          "media_name": "T. Hylton",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Miranda",
+          "last_name": "Campbell",
+          "media_name": "M. Campbell",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Nehita",
+          "last_name": "Oko-Obo",
+          "media_name": "N. Oko-Obo",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        }
+      ]
+    },
+    {
+      "name": "Blaze",
+      "abbreviation": "BLZ",
+      "bio": "A blaze doesn't panic — it spreads with purpose. Team Blaze embodies controlled fire power: calculated, composed, and unstoppable. They move with intention and are always ready to strike. They don't chase the moment — they own it.",
+      "coach": "Aprille Deus",
+      "coach_bio": "Aprille Deus is a high-performance basketball coach with 12+ years of experience in national team operations, video analytics, and player development. She led Canada's U23 3x3 Men's Team and helped the Women's Team to a top-four finish at the 2024 Paris Olympics. Aprille has coached at Crestwood Prep and TMU, and supported Canada Basketball at global events like the U19 World Cup and U23 GLOBL JAM. Her approach blends tactical precision, athlete-first development, and forward-thinking team culture.",
+      "general_manager": "Micaella Riche",
+      "general_manager_bio": "Micaella Riche brings over 15 years of experience in the basketball sector, with a career that spans national, international, and professional levels as both a player and coach. From grassroots initiatives to the professional stage, she has led high-performing teams and delivered complex projects across various settings. Known for her strategic leadership and commitment to impact, Micaella believes in the power of sport to transform lives and create lasting social change.",
+      "players": [
+        {
+          "first_name": "Vanessa",
+          "last_name": "Budimunda",
+          "media_name": "V. Budimunda",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Samantha",
+          "last_name": "Keltos",
+          "media_name": "S. Keltos",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Hannah",
+          "last_name": "Sunley-Paisley",
+          "media_name": "H. Sunley-Paisley",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Kiara",
+          "last_name": "Leveridge",
+          "media_name": "K. Leveridge",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Anegor",
+          "last_name": "Wol",
+          "media_name": "A. Wol",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Brey",
+          "last_name": "Johnson",
+          "media_name": "B. Johnson",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Brittney",
+          "last_name": "English",
+          "media_name": "B. English",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Eve",
+          "last_name": "Uwayesu",
+          "media_name": "E. Uwayesu",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Lisa",
+          "last_name": "Tesson",
+          "media_name": "L. Tesson",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        }
+      ]
+    },
+    {
+      "name": "Charge",
+      "abbreviation": "CHG",
+      "bio": "High voltage. Forward motion. A mix of electric energy and fearless advance. Team Charge plays with resilience, pace, and purpose. They attack every play — and never back down.",
+      "coach": "Justina King",
+      "coach_bio": "Justina's journey from a former Division I athlete and a member of the Canadian National Team to a coach is testament to her evolution in the sport. She made her mark at the NCAA Division I level while playing for Long Beach State and the University of Toledo before representing Team Canada and playing professionally in Portugal. As a standout in Hoopqueens, she concluded last season as the champion and MVP. Justina is dedicated to coaching the next generation of players. She has led Ontario's provincial team for three summers and recently joined Raptors 905 as a part-time assistant coach. Her love for the game is evident in her every action, inspiring future stars and growing the game.",
+      "general_manager": "Tenicha Gittens",
+      "general_manager_bio": "Tenicha has led the Concordia Stingers Women's Basketball team since 2015. In 2018, she guided them to their first U SPORTS Final 8 appearance in program history, earning her RSEQ Coach of the Year honours. She coordinated three NCAA Division I programs: LaSalle University (Director of Basketball Operations), St. Francis University (Assistant Coach), and Howard University (Recruiting Coordinator/Assistant Coach). Internationally, Tenicha has served as Assistant Coach for Canada Basketball's U23 team and Technical Consultant/Performance Manager for the U17 Women's National Team, winning silver at the GLOBL JAM and FIBA U17 Women's World Cup. Off the court, she mentors through the Black Canadian Coaches Association and U SPORTS Aspiring Coaches Program. In 2023, CBC named her a Black Changemaker for her impact on sport and community.",
+      "players": [
+        {
+          "first_name": "Victoria",
+          "last_name": "Lawrence",
+          "media_name": "V. Lawrence",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Keira",
+          "last_name": "Daly",
+          "media_name": "K. Daly",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Areej",
+          "last_name": "Burgonio",
+          "media_name": "A. Burgonio",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Serena",
+          "last_name": "Tchida",
+          "media_name": "S. Tchida",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Angeline",
+          "last_name": "Campbell",
+          "media_name": "A. Campbell",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Brooke",
+          "last_name": "Hussey",
+          "media_name": "B. Hussey",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Keowa",
+          "last_name": "Walters",
+          "media_name": "K. Walters",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Kiyara",
+          "last_name": "Letlow",
+          "media_name": "K. Letlow",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
+        },
+        {
+          "first_name": "Emani",
+          "last_name": "Clough",
+          "media_name": "E. Clough",
+          "jersey_number": null,
+          "position": null,
+          "school": null,
+          "birth_date": null,
+          "nationality": null
         }
       ]
     }
@@ -102,38 +408,84 @@
   "games": [
     {
       "game_number": 1,
-      "date": "2025-05-03",
-      "start_time": "2025-05-03 14:30:00",
-      "location": "UofT Gymnasium",
-      "attendance": 1200
+      "date": "2025-06-08",
+      "start_time": "2025-06-08 14:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Charge",
+      "away_team": "Blaze",
+      "attendance": null
     },
     {
       "game_number": 2,
-      "date": "2025-05-10", 
-      "start_time": "2025-05-10 19:00:00",
-      "location": "Mattamy Athletic Centre",
-      "attendance": 950
+      "date": "2025-06-08",
+      "start_time": "2025-06-08 16:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Reign",
+      "away_team": "Tide",
+      "attendance": null
     },
     {
       "game_number": 3,
-      "date": "2025-05-17",
-      "start_time": "2025-05-17 16:15:00", 
-      "location": "UofT Gymnasium",
-      "attendance": 1100
+      "date": "2025-06-15",
+      "start_time": "2025-06-15 14:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Reign",
+      "away_team": "Charge",
+      "attendance": null
     },
     {
       "game_number": 4,
-      "date": "2025-05-24",
-      "start_time": "2025-05-24 14:00:00",
-      "location": "Mattamy Athletic Centre", 
-      "attendance": 1050
+      "date": "2025-06-15",
+      "start_time": "2025-06-15 16:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Tide",
+      "away_team": "Blaze",
+      "attendance": null
     },
     {
       "game_number": 5,
-      "date": "2025-05-31",
-      "start_time": "2025-05-31 19:30:00",
-      "location": "UofT Gymnasium",
-      "attendance": 1300
+      "date": "2025-06-22",
+      "start_time": "2025-06-22 14:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Reign",
+      "away_team": "Blaze",
+      "attendance": null
+    },
+    {
+      "game_number": 6,
+      "date": "2025-06-22",
+      "start_time": "2025-06-22 16:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Tide",
+      "away_team": "Charge",
+      "attendance": null
+    },
+    {
+      "game_number": 7,
+      "date": "2025-06-29",
+      "start_time": "2025-06-29 14:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Semi-Final 1",
+      "away_team": "1st Place vs 4th Place",
+      "attendance": null
+    },
+    {
+      "game_number": 8,
+      "date": "2025-06-29",
+      "start_time": "2025-06-29 16:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Semi-Final 2",
+      "away_team": "2nd Place vs 3rd Place",
+      "attendance": null
+    },
+    {
+      "game_number": 9,
+      "date": "2025-07-06",
+      "start_time": "2025-07-06 16:30:00",
+      "location": "UofT Goldring Centre for High Performance Sport",
+      "home_team": "Championship Final",
+      "away_team": "Winners of Semi-Finals",
+      "attendance": null
     }
   ]
 }

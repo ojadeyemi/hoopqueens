@@ -72,6 +72,7 @@ This project is for **HoopQueens** (a Canadian women's basketball league).
    ```
 
 4. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -88,7 +89,7 @@ This project is for **HoopQueens** (a Canadian women's basketball league).
 
 ## 🗄️ Database (SQLite)
 
-- Data is stored in a local `hoopqueens.sqlite` file.
+- Data is stored in a local `hoopqueens.db` file.
 - **SQLModel** is used as an ORM (built on SQLAlchemy).
 - You can query data using either **raw SQL** or **SQLModel**.
 
@@ -97,7 +98,7 @@ This project is for **HoopQueens** (a Canadian women's basketball league).
 ```python
 import sqlite3
 
-conn = sqlite3.connect("hoopqueens.sqlite")
+conn = sqlite3.connect("hoopqueens.db")
 cursor = conn.cursor()
 cursor.execute("SELECT name, points FROM player")
 players = cursor.fetchall()
@@ -110,7 +111,7 @@ conn.close()
 ```python
 from sqlmodel import SQLModel, Session, select, create_engine, Field
 
-engine = create_engine("sqlite:///hoopqueens.sqlite")
+engine = create_engine("sqlite:///hoopqueens.db")
 
 class Player(SQLModel, table=True):
       id: int | None = Field(default=None, primary_key=True)
@@ -123,7 +124,7 @@ with Session(engine) as session:
 ```
 
 - [Learn more about SQLModel](https://sqlmodel.tiangolo.com)
-- [Learn more about SQLite](https://www.sqlite.org/index.html)
+- [Learn more about SQLite](https://www.db.org/index.html)
 
 ---
 
