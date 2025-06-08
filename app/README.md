@@ -10,7 +10,7 @@ This project contains both the API and web UI logic for HoopQueens.
 - The web UI (HTML, CSS, JS) is in the `web` folder.
 
 The database is a SQLite file:  
-[`../hoopqueens.sqlite`](../hoopqueens.sqlite)
+[`../hoopqueens.db`](../hoopqueens.db)
 
 ## Folder Structure
 
@@ -83,4 +83,4 @@ Just open one of these links in your browser after starting the server.
 
 ## Viewing the Database
 
-To view the data in `hoopqueens.sqlite`, install the [SQLite Viewer extension for VS Code](https://marketplace.visualstudio.com/items?itemName=alexcvzz.vscode-sqlite). After installing, open VS Code, find the `hoopqueens.sqlite` file in your project, and click on it to browse and inspect the database tables and data.
+To view the data in `hoopqueens.db`, install the [SQLite Viewer extension for VS Code](https://marketplace.visualstudio.com/items?itemName=alexcvzz.vscode-sqlite). After installing, open VS Code, find the `hoopqueens.db` file in your project, and click on it to browse and inspect the database tables and data.
