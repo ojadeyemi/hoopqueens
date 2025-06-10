@@ -5,8 +5,6 @@ from pydantic import BaseModel, Field
 from sqlmodel import Field as SQLField
 from sqlmodel import Relationship, SQLModel
 
-SQLModel.__table_args__ = {"extend_existing": True}
-
 
 # SQLModels for database
 class Team(SQLModel, table=True):
@@ -98,8 +96,9 @@ class TeamBoxScore(SQLModel, table=True):
     points_from_turnovers: int = SQLField(description="Points off turnovers")
     biggest_lead: Optional[str] = SQLField(None, description="Largest lead")
     biggest_run: Optional[str] = SQLField(None, description="Biggest run")
-    points_in_paint_made: int = SQLField(description="Paint points")
-    points_in_paint_attempted: int = SQLField(description="Paint attempts")
+    points_in_paint: int = SQLField(description="Paint points")
+    field_goal_in_paint_made: int = SQLField(description="Paint points made")
+    field_goal_in_paint_attempted: int = SQLField(description="Paint attempts")
     points_in_paint_percentage: float = SQLField(description="Paint %")
     second_chance_points: int = SQLField(description="Second chance points")
     points_per_possession: float = SQLField(description="Points per possession")
@@ -121,6 +120,7 @@ class PlayerBoxScore(SQLModel, table=True):
     team_id: int = SQLField(foreign_key="team.id", description="Team reference")
     player_id: int = SQLField(foreign_key="player.id", description="Player reference")
     media_name: str = SQLField(description="Player media name (FirstInitial. LastName)")
+    jersey_number: Optional[int] = SQLField(None, description="Jersey number")
     minutes: float = SQLField(default=0, description="Minutes played")
 
     # Shooting stats
@@ -199,9 +199,10 @@ class TeamBoxScoreModel(BaseModel):
     points_from_turnovers: int = Field(description="Points off turnovers")
     biggest_lead: Optional[str] = Field(None, description="Largest lead")
     biggest_run: Optional[str] = Field(None, description="Biggest run")
-    points_in_paint_made: int = Field(description="Paint points")
-    points_in_paint_attempted: int = Field(description="Paint attempts")
-    points_in_paint_percentage: float = Field(description="Paint %")
+    points_in_paint: int = SQLField(description="Paint points")
+    field_goal_in_paint_made: int = SQLField(description="Paint points made")
+    field_goal_in_paint_attempted: int = SQLField(description="Paint attempts")
+    points_in_paint_percentage: float = SQLField(description="Paint %")
     second_chance_points: int = Field(description="Second chance points")
     points_per_possession: float = Field(description="Points per possession")
     fast_break_points: int = Field(description="Fast break points")
@@ -218,6 +219,7 @@ class PlayerBoxScoreModel(BaseModel):
     player_id: int = Field(description="Player reference")
     team_id: int = Field(description="Team reference")
     media_name: str = Field(description="Player media name (LastInitial. FirstName)")
+    jersey_number: Optional[int] = Field(None, description="Jersey number")
     minutes: float = Field(description="Minutes played, default to 0 if no minutes played")
 
     # Shooting stats

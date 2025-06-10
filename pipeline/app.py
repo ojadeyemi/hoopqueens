@@ -1,212 +1,335 @@
-import os
-import tempfile
-from typing import Optional
+"""
+Basketball Statistics Management App
+Streamlit app for uploading, parsing, editing, and managing game statistics.
+"""
+
+from parser import ALLOWED_EXTENSIONS, parse_game_file, validate_game_data
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from game_service import GameService, create_game_service
+from stats_service import StatsService, create_stats_service
 
-from pipeline.game_service import create_game_service
-from pipeline.stats_service import create_stats_service
+from db.models import GameData
+
+# Page config
+st.set_page_config(
+    page_title="HoopQueens Stats Manager", page_icon="🏀", layout="wide", initial_sidebar_state="expanded"
+)
 
 
+# Initialize services
 @st.cache_resource
-def get_services():
-    """Create and cache service instances."""
+def init_services():
+    """Initialize and cache service instances."""
     game_service = create_game_service()
     stats_service = create_stats_service(game_service)
     return game_service, stats_service
 
 
-def configure_page():
-    """Set Streamlit page configuration."""
-    st.set_page_config(page_title="HoopQueens Data", page_icon="🏀", layout="wide")
+def display_header():
+    """Display app header."""
+    st.title("🏀 HoopQueens Statistics Manager")
+    st.markdown("---")
 
 
-def upload_section() -> Optional[str]:
-    """Upload and preview a basketball box score file."""
-    uploaded = st.file_uploader(
-        "Upload box score file (PDF, JPEG, PNG, etc.)",
-        type=["pdf", "jpeg", "jpg", "png"],
+def display_sidebar_stats(game_service):
+    """Display database statistics in sidebar."""
+    st.sidebar.header("📊 Database Status")
+
+    total_games = game_service.get_game_count()
+    games_with_stats = game_service.get_games_with_stats_count()
+
+    col1, col2 = st.sidebar.columns(2)
+    col1.metric("Total Games", total_games)
+    col2.metric("With Stats", games_with_stats)
+
+    if total_games > 0:
+        progress = games_with_stats / total_games
+        st.sidebar.progress(progress, text=f"{progress:.0%} Complete")
+
+
+def upload_section():
+    """Handle file upload section."""
+    st.header("📤 Upload Game Statistics")
+
+    uploaded_file = st.file_uploader(
+        "Choose a game statistics file",
+        type=[ext.replace(".", "") for ext in ALLOWED_EXTENSIONS],
+        help="Upload PDF, JPG, JPEG, or PNG files containing game box scores",
     )
-    if not uploaded:
-        return None
-    ext = os.path.splitext(uploaded.name)[1].lower()
-    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
-        tmp.write(uploaded.getvalue())
-        tmp_path = tmp.name
-    st.subheader("File Preview")
-    if ext == ".pdf":
-        from streamlit_pdf_viewer import pdf_viewer
 
-        pdf_viewer(uploaded.getvalue(), width="100%", height=700)
-    else:
-        st.image(uploaded, use_container_width=True)
-    st.info(f"Filename: {uploaded.name}")
-    return tmp_path
+    if uploaded_file:
+        # Save uploaded file temporarily
+        temp_path = Path(f"temp_{uploaded_file.name}")
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        return temp_path
+
+    return None
 
 
-@st.cache_data(show_spinner="Parsing file…")
-def get_game_data(file_path: str):
-    """Parse game data via AI."""
-    from pipeline.parser import parse_game_file
+def parse_and_preview_section(file_path: Path, game_service: GameService):
+    """Parse file and show editable preview."""
+    st.header("🔍 Parse and Preview")
 
-    return parse_game_file(file_path)
+    # Game selection
+    games = game_service.get_all_games()
+    game_options = {
+        f"Game {g.game_number} - {g.date.strftime('%Y-%m-%d')} - {g.start_time}": g.id
+        for g in games
+        if not game_service.game_has_stats(g.id)  # type: ignore
+    }
+
+    if not game_options:
+        st.warning("No games available without statistics.")
+        return None, None
+
+    selected_game = st.selectbox("Select game to add statistics:", options=list(game_options.keys()))
+    game_id = game_options[selected_game]
+
+    # Parse button
+    if st.button("🚀 Parse File", type="primary"):
+        with st.spinner("Parsing game statistics..."):
+            try:
+                game_data = parse_game_file(file_path)
+                st.session_state["parsed_data"] = game_data
+                st.session_state["game_id"] = game_id
+
+                # Validate data
+                issues = validate_game_data(game_data)
+                if issues:
+                    st.warning("⚠️ Validation issues found:")
+                    for issue in issues:
+                        st.write(f"- {issue}")
+                else:
+                    st.success("✅ File parsed successfully!")
+
+            except Exception as e:
+                st.error(f"❌ Error parsing file: {e}")
+                return None, None
+
+    return st.session_state.get("parsed_data"), st.session_state.get("game_id")
 
 
-def display_team_stats(stats_data) -> Optional[pd.DataFrame]:
-    """Display editable team statistics."""
-    rows = [t.model_dump() for t in stats_data.team_box_scores]
-    if not rows:
-        st.info("No team statistics available")
-        return None
-    df = pd.DataFrame(rows)
-    return st.data_editor(df, use_container_width=True)
+def edit_team_stats(game_data: GameData) -> GameData:
+    """Edit team statistics with data editor."""
+    st.subheader("🏀 Team Statistics")
+
+    # Convert to DataFrame for editing
+    team_df = pd.DataFrame([team.model_dump() for team in game_data.team_box_scores])
+
+    # Configure columns
+    column_config = {
+        "team_id": st.column_config.NumberColumn("Team ID", disabled=True),
+        "team_name": st.column_config.TextColumn("Team Name", disabled=True),
+        "team_abbreviation": st.column_config.TextColumn("Abbr", disabled=True),
+        "final_score": st.column_config.NumberColumn("Final Score", min_value=0, max_value=200),
+        "field_goal_percentage": st.column_config.NumberColumn("FG%", min_value=0.0, max_value=1.0, format="%.3f"),
+        "three_pointer_percentage": st.column_config.NumberColumn("3P%", min_value=0.0, max_value=1.0, format="%.3f"),
+        "free_throw_percentage": st.column_config.NumberColumn("FT%", min_value=0.0, max_value=1.0, format="%.3f"),
+    }
+
+    edited_team_df = st.data_editor(
+        team_df, column_config=column_config, use_container_width=True, hide_index=True, key="team_editor"
+    )
+
+    # Update game_data with edited values
+    for i, row in edited_team_df.iterrows():
+        game_data.team_box_scores[i] = game_data.team_box_scores[i].model_validate(row.to_dict())  # type: ignore
+
+    return game_data
 
 
-def display_player_stats(stats_data) -> Optional[pd.DataFrame]:
-    """Display editable player statistics."""
-    rows = [p.model_dump() for p in stats_data.player_box_scores]
-    if not rows:
-        st.info("No player statistics available")
-        return None
-    df = pd.DataFrame(rows)
-    if {"team_id", "points"}.issubset(df.columns):
-        df = df.sort_values(["team_id", "points"], ascending=[True, False])
-    return st.data_editor(df, use_container_width=True, height=400)
+def edit_player_stats(game_data: GameData) -> GameData:
+    """Edit player statistics with data editor."""
+    st.subheader("👥 Player Statistics")
+
+    # Group by team
+    team_names = {team.team_id: team.team_name for team in game_data.team_box_scores}
+
+    for team_id, team_name in team_names.items():
+        st.write(f"**{team_name}**")
+
+        # Filter players for this team
+        team_players = [p for p in game_data.player_box_scores if p.team_id == team_id]
+
+        if not team_players:
+            st.warning(f"No players found for {team_name}")
+            continue
+
+        # Convert to DataFrame
+        player_df = pd.DataFrame([p.model_dump() for p in team_players])
+
+        # Configure columns
+        column_config = {
+            "player_id": st.column_config.NumberColumn("Player ID", disabled=True),
+            "team_id": st.column_config.NumberColumn("Team ID", disabled=True),
+            "media_name": st.column_config.TextColumn("Name", help="Format: LastInitial. FirstName"),
+            "jersey_number": st.column_config.NumberColumn("Jersey #", min_value=0, max_value=99),
+            "minutes": st.column_config.NumberColumn("Minutes", min_value=0.0, max_value=48.0, format="%.1f"),
+            "points": st.column_config.NumberColumn("Points", min_value=0),
+            "field_goal_percentage": st.column_config.NumberColumn("FG%", min_value=0.0, max_value=1.0, format="%.3f"),
+            "three_pointer_percentage": st.column_config.NumberColumn(
+                "3P%", min_value=0.0, max_value=1.0, format="%.3f"
+            ),
+            "free_throw_percentage": st.column_config.NumberColumn("FT%", min_value=0.0, max_value=1.0, format="%.3f"),
+            "plus_minus": st.column_config.NumberColumn("+/-"),
+        }
+
+        # Select columns to display
+        display_columns = [
+            "media_name",
+            "jersey_number",
+            "minutes",
+            "points",
+            "field_goals_made",
+            "field_goals_attempted",
+            "field_goal_percentage",
+            "three_pointers_made",
+            "three_pointers_attempted",
+            "three_pointer_percentage",
+            "free_throws_made",
+            "free_throws_attempted",
+            "free_throw_percentage",
+            "total_rebounds",
+            "assists",
+            "steals",
+            "blocks",
+            "turnovers",
+            "fouls",
+            "plus_minus",
+        ]
+
+        edited_player_df = st.data_editor(
+            player_df[display_columns],
+            column_config=column_config,
+            use_container_width=True,
+            hide_index=True,
+            key=f"player_editor_{team_id}",
+        )
+
+        # Update game_data with edited values
+        player_index = 0
+        for i, p in enumerate(game_data.player_box_scores):
+            if p.team_id == team_id:
+                # Merge edited data back
+                original_data = p.model_dump()
+                edited_data = edited_player_df.iloc[player_index].to_dict()
+                original_data.update(edited_data)
+                game_data.player_box_scores[i] = game_data.player_box_scores[i].model_validate(original_data)
+                player_index += 1
+
+    return game_data
 
 
-def process_file(file_path: str):
-    """Process the uploaded file via AI and show progress."""
-    with st.spinner("Processing file with AI…"):
-        progress = st.progress(0)
-        for i in range(1, 4):
-            progress.progress(i * 30)
-        data = get_game_data(file_path)
-        progress.progress(100)
-        return data
+def save_section(game_data: GameData, game_id: int, game_service):
+    """Handle saving edited data."""
+    st.header("💾 Save to Database")
+
+    col1, col2, col3 = st.columns([2, 1, 2])
+
+    with col2:
+        if st.button("💾 Save Statistics", type="primary", use_container_width=True):
+            try:
+                message = game_service.save_game_stats(game_id, game_data)
+                st.success(f"✅ {message}")
+
+                # Clear session state
+                if "parsed_data" in st.session_state:
+                    del st.session_state["parsed_data"]
+                if "game_id" in st.session_state:
+                    del st.session_state["game_id"]
+
+                # Rerun to refresh stats
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"❌ Error saving data: {e}")
 
 
-def setup_openai_api() -> bool:
-    """Ensure OpenAI API key is set."""
-    if os.environ.get("OPENAI_API_KEY"):
-        return True
-    key = st.text_input("Enter your OpenAI API key:", type="password")
-    if key:
-        os.environ["OPENAI_API_KEY"] = key
-        return True
-    st.warning("OpenAI API key not found in environment.")
-    return False
+def view_statistics_section(stats_service: StatsService):
+    """Display game statistics and leaderboards."""
+    st.header("📈 View Statistics")
+
+    tab1, tab2, tab3 = st.tabs(["Team Standings", "Player Leaders", "Game Results"])
+
+    with tab1:
+        standings = stats_service.get_team_standings()
+        if standings:
+            st.dataframe(pd.DataFrame(standings), use_container_width=True, hide_index=True)
+        else:
+            st.info("No team statistics available yet.")
+
+    with tab2:
+        stat_option = st.selectbox("Select statistic:", ["points", "assists", "total_rebounds", "steals", "blocks"])
+
+        min_games = st.slider("Minimum games played:", 1, 10, 3)
+
+        leaders = stats_service.get_player_leaderboard(stat_option, min_games)
+        if leaders:
+            st.dataframe(pd.DataFrame(leaders), use_container_width=True, hide_index=True)
+        else:
+            st.info("No player statistics available yet.")
+
+    with tab3:
+        results = stats_service.get_game_results()
+        if results:
+            st.dataframe(pd.DataFrame(results), use_container_width=True, hide_index=True)
+        else:
+            st.info("No games recorded yet.")
 
 
 def main():
-    configure_page()
-    st.title("🏀 HoopQueens Stats Tracker")
+    """Main application flow."""
+    display_header()
 
-    try:
-        game_service, stats_service = get_services()
-    except Exception as e:
-        st.error(f"Failed to initialize services: {e}")
-        st.stop()
+    # Initialize services
+    game_service, stats_service = init_services()
 
-    tabs = st.tabs(["Update Games", "Standings", "Stats Leaders"])
-    with tabs[0]:
-        st.markdown("Upload box score files to update game statistics")
-        if not setup_openai_api():
-            st.info("Please provide an OpenAI API key to continue.")
-            return
+    # Sidebar stats
+    display_sidebar_stats(game_service)
 
-        games = game_service.get_all_games()
-        if not games:
-            st.warning("No games found in database.")
-            st.stop()
+    # Main content tabs
+    tab1, tab2 = st.tabs(["📤 Upload & Edit", "📊 View Statistics"])
 
-        opts = [
-            (
-                g.id,
-                f"Game #{g.game_number}: {g.date.strftime('%Y-%m-%d') if g.date else 'Unknown'} "
-                f"at {g.start_time.strftime('%H:%M') if g.start_time else 'Unknown'} – {g.location}",
-            )
-            for g in games
-        ]
-        selection = st.selectbox("Select a game to update:", [label for _, label in opts])
-        selected_id = next((i for i, lbl in opts if lbl == selection), None)
-        if selected_id:
-            game = game_service.get_game_by_id(selected_id)
-            if game:
-                st.info(
-                    f"**Selected Game:** #{game.game_number} on {game.date.strftime('%Y-%m-%d')} at {game.location}"
-                )
-                if game_service.game_has_stats(selected_id):
-                    st.warning("⚠️ This game already has statistics.")
+    with tab1:
+        # Upload section
+        file_path = upload_section()
 
-        tmp = upload_section()
-        if tmp and st.button("Process File", type="primary"):
-            stats = process_file(tmp)
-            if stats:
-                st.session_state.stats_data = stats
-                st.session_state.selected_game_id = selected_id
-                st.success("Data extracted successfully!")
+        if file_path:
+            # Parse and preview
+            game_data, game_id = parse_and_preview_section(file_path, game_service)
 
-        if st.session_state.get("stats_data"):
-            st.divider()
-            subtabs = st.tabs(["Team Stats", "Player Stats"])
-            with subtabs[0]:
-                st.subheader("Team Statistics")
-                st.session_state.edited_team = display_team_stats(st.session_state.stats_data)
-            with subtabs[1]:
-                st.subheader("Player Statistics")
-                st.session_state.edited_player = display_player_stats(st.session_state.stats_data)
+            if game_data and game_id:
+                st.markdown("---")
+                st.header("✏️ Edit Statistics")
+                st.info("💡 You can edit any values below before saving to the database.")
 
-            st.divider()
-            if st.button("Save to Database", type="primary"):
-                with st.spinner("Saving data to database…"):
-                    result = game_service.save_game_stats(
-                        st.session_state.selected_game_id, st.session_state.stats_data
-                    )
-                    st.warning(result) if "already" in result else st.success(result)
-                    if st.button("Process Another Game"):
-                        for k in ["stats_data", "selected_game_id", "edited_team", "edited_player"]:
-                            st.session_state.pop(k, None)
-                        if tmp and os.path.exists(tmp):
-                            os.unlink(tmp)
-                        st.rerun()
+                # Edit team stats
+                game_data = edit_team_stats(game_data)
 
-        if tmp and os.path.exists(tmp) and "stats_data" not in st.session_state:
-            os.unlink(tmp)
+                st.markdown("---")
 
-    with tabs[1]:
-        st.subheader("Team Standings")
-        try:
-            df = pd.DataFrame(stats_service.get_team_standings() or [])
-            st.dataframe(df, use_container_width=True, hide_index=True)
-        except Exception as e:
-            st.error(f"Error displaying team standings: {e}")
-        try:
-            results = stats_service.get_game_results()
-            if results:
-                st.divider()
-                st.subheader("Game Results")
-                st.dataframe(pd.DataFrame(results), use_container_width=True, hide_index=True)
-        except Exception as e:
-            st.error(f"Error displaying game results: {e}")
+                # Edit player stats
+                game_data = edit_player_stats(game_data)
 
-    with tabs[2]:
-        st.subheader("Player Leaderboards")
-        stat_map = [
-            ("points", "Points Per Game"),
-            ("rebounds", "Rebounds Per Game"),
-            ("assists", "Assists Per Game"),
-            ("steals", "Steals Per Game"),
-            ("blocks", "Blocks Per Game"),
-            ("efficiency", "Efficiency Rating"),
-        ]
-        label = st.selectbox("Select Statistic:", options=[lbl for _, lbl in stat_map])
-        key = next(k for k, lbl in stat_map if lbl == label)
-        try:
-            df = pd.DataFrame(stats_service.get_player_leaderboard(key) or [])
-            st.dataframe(df, use_container_width=True, hide_index=True)
-        except Exception as e:
-            st.error(f"Error displaying player leaderboard: {e}")
+                st.markdown("---")
+
+                # Save section
+                save_section(game_data, game_id, game_service)
+
+            # Cleanup temp file
+            try:
+                file_path.unlink()
+            except Exception as e:
+                print("Could not delete temporary file, it may still be in use.", e)
+                pass
+
+    with tab2:
+        view_statistics_section(stats_service)
 
 
 if __name__ == "__main__":
