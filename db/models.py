@@ -90,7 +90,6 @@ class TeamBoxScore(SQLModel, table=True):
     fouls: int = SQLField(description="Fouls committed")
     fouls_drawn: int = SQLField(description="Fouls drawn")
     plus_minus: int = SQLField(description="Plus/minus")
-    efficiency: int = SQLField(description="Efficiency rating")
 
     # Advanced stats
     points_from_turnovers: int = SQLField(description="Points off turnovers")
@@ -147,7 +146,6 @@ class PlayerBoxScore(SQLModel, table=True):
     fouls: int = SQLField(description="Fouls committed")
     fouls_drawn: int = SQLField(description="Fouls drawn")
     plus_minus: int = SQLField(description="Plus/minus")
-    efficiency: int = SQLField(description="Efficiency rating")
     points: int = SQLField(description="Points scored")
 
     game: Game = Relationship(back_populates="player_box_scores")
@@ -193,7 +191,6 @@ class TeamBoxScoreModel(BaseModel):
     fouls: int = Field(description="Fouls committed")
     fouls_drawn: int = Field(description="Fouls drawn")
     plus_minus: int = Field(description="Plus/minus")
-    efficiency: int = Field(description="Efficiency rating")
 
     # Advanced stats
     points_from_turnovers: int = Field(description="Points off turnovers")
@@ -246,7 +243,6 @@ class PlayerBoxScoreModel(BaseModel):
     fouls: int = Field(description="Fouls committed")
     fouls_drawn: int = Field(description="Fouls drawn")
     plus_minus: int = Field(description="Plus/minus")
-    efficiency: int = Field(description="Efficiency rating")
     points: int = Field(description="Points scored")
 
 
