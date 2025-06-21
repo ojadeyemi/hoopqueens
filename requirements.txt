@@ -3,6 +3,6 @@ fastapi[standard]==0.115.12
 sqlmodel==0.0.24
 
 #for pipeline
-openai==1.85.0
+openai==1.86.0
 streamlit==1.45.1
 streamlit-pdf-viewer==0.0.24

@@ -83,8 +83,8 @@ def get_all_players(team_ids: list[int]) -> list[dict[str, str | int | None]]:
 
 def create_comprehensive_system_prompt() -> str:
     """Create system prompt with ALL teams and players."""
-    teams = get_all_teams([1, 2])
-    players = get_all_players([1, 2])
+    teams = get_all_teams([1, 2, 3, 4])
+    players = get_all_players([1, 2, 3, 4])
 
     # Format team list
     team_list = []
@@ -114,7 +114,9 @@ def create_comprehensive_system_prompt() -> str:
                         ALL PLAYERS IN DATABASE:
                         {"".join(player_list)}
 
-                        
+                        Note not all players may be present in the game file, but you must use the IDs and media names provided above.
+
+                
                         MATCHING RULES:
                         - Use the EXACT player_id and team_id from the lists above
                         - The media_name must match EXACTLY as shown above
@@ -140,8 +142,6 @@ def create_comprehensive_system_prompt() -> str:
 
 
                         """
-
-    print(system_prompt)
 
     return system_prompt
 
