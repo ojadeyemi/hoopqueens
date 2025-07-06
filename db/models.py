@@ -50,6 +50,8 @@ class Game(SQLModel, table=True):
     location: Optional[str] = SQLField(None, description="Venue")
     home_team: Optional[str] = SQLField(None, description="Home team")
     away_team: Optional[str] = SQLField(None, description="Away team")
+    home_team_score: Optional[int] = SQLField(None, description="Home team score")
+    away_team_score: Optional[int] = SQLField(None, description="Away team score")
     attendance: Optional[int] = SQLField(None, description="Spectator count")
 
     team_box_scores: List["TeamBoxScore"] = Relationship(back_populates="game")
