@@ -13,15 +13,16 @@ from pathlib import Path
 from sqlalchemy import func
 from sqlmodel import Session, SQLModel, col, create_engine, inspect, select
 
+from config import CURRENT_SEASON, DATABASE_URL
 from db.models import Game, GameData, PlayerBoxScore, TeamBoxScore
 
 
 class GameService:
     """Service for managing game data and database operations."""
 
-    def __init__(self, database_url: str = "sqlite:///hoopqueens.db"):
+    def __init__(self, database_url: str = DATABASE_URL):
         self.database_url = database_url
-        self.database_path = database_url.replace("sqlite:///", "")
+        self.database_path = str(DATABASE_URL).replace("sqlite:///", "")
         self.snapshot_dir = Path("snapshots")
         self.engine = create_engine(database_url)
         self._ensure_directories()
@@ -153,6 +154,7 @@ class GameService:
                 for team_data in box_score_data.team_box_scores:
                     team_dict = team_data.model_dump()
                     team_dict["game_id"] = game_id
+                    team_dict["season"] = CURRENT_SEASON
 
                     # Validate team_id
                     try:
@@ -166,6 +168,7 @@ class GameService:
                 for player_data in box_score_data.player_box_scores:
                     player_dict = player_data.model_dump()
                     player_dict["game_id"] = game_id
+                    player_dict["season"] = CURRENT_SEASON
 
                     # Validate IDs
                     try:
@@ -240,7 +243,7 @@ class GameService:
 
 
 # Factory function for dependency injection
-def create_game_service(database_url: str = "sqlite:///hoopqueens.db") -> GameService:
+def create_game_service(database_url: str = DATABASE_URL) -> GameService:
     """Create and return a GameService instance."""
     service = GameService(database_url)
     service.create_tables()  # Ensure tables exist

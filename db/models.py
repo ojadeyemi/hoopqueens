@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 from sqlmodel import Field as SQLField
 from sqlmodel import Relationship, SQLModel
 
+from config import CURRENT_SEASON
+
 
 # SQLModels for database
 class Team(SQLModel, table=True):
@@ -18,6 +20,7 @@ class Team(SQLModel, table=True):
     coach_bio: str = SQLField(None, description="Head coach biography")
     general_manager: str = SQLField(None, description="GM name")
     general_manager_bio: str = SQLField(None, description="GM biography")
+    season: int = SQLField(default=CURRENT_SEASON, description="Season year")
 
     players: List["Player"] = Relationship(back_populates="team")
 
@@ -35,6 +38,7 @@ class Player(SQLModel, table=True):
     school: Optional[str] = SQLField(None, description="Player's school")
     birth_date: Optional[str] = SQLField(None, description="Birth date")
     nationality: Optional[str] = SQLField(None, description="Nationality")
+    season: int = SQLField(default=CURRENT_SEASON, description="Season year")
 
     team: Team = Relationship(back_populates="players")
     box_scores: List["PlayerBoxScore"] = Relationship(back_populates="player")
@@ -53,6 +57,7 @@ class Game(SQLModel, table=True):
     home_team_score: Optional[int] = SQLField(None, description="Home team score")
     away_team_score: Optional[int] = SQLField(None, description="Away team score")
     attendance: Optional[int] = SQLField(None, description="Spectator count")
+    season: int = SQLField(default=CURRENT_SEASON, description="Season year")
 
     team_box_scores: List["TeamBoxScore"] = Relationship(back_populates="game")
     player_box_scores: List["PlayerBoxScore"] = Relationship(back_populates="game")
@@ -67,6 +72,7 @@ class TeamBoxScore(SQLModel, table=True):
     team_name: str = SQLField(description="Team name")
     team_abbreviation: str = SQLField(description="Team abbreviation")
     final_score: int = SQLField(description="Final score")
+    season: int = SQLField(default=CURRENT_SEASON, description="Season year")
 
     # Shooting stats
     field_goals_made: int = SQLField(description="FG made")
@@ -123,6 +129,7 @@ class PlayerBoxScore(SQLModel, table=True):
     media_name: str = SQLField(description="Player media name (FirstInitial. LastName)")
     jersey_number: Optional[int] = SQLField(None, description="Jersey number")
     minutes: float = SQLField(default=0, description="Minutes played")
+    season: int = SQLField(default=CURRENT_SEASON, description="Season year")
 
     # Shooting stats
     field_goals_made: int = SQLField(description="FG made")

@@ -1,7 +1,8 @@
 from sqlmodel import create_engine
 
+from config import DATABASE_URL
+
 # Basic database configuration
-DATABASE_URL = "sqlite:///hoopqueens.db"
 engine = create_engine(DATABASE_URL)
 
 
