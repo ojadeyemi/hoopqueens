@@ -13,6 +13,7 @@ from game_service import GameService
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
+from config import CURRENT_SEASON
 from db.models import Game, Player, PlayerBoxScore, Team, TeamBoxScore
 
 
@@ -131,8 +132,8 @@ class DataSeeder:
         games_skipped = 0
 
         for game_data in games_data:
-            # Check if game already exists using modern SQLModel
-            statement = select(Game).where(Game.game_number == game_data["game_number"])
+            season = game_data.get("season", CURRENT_SEASON)
+            statement = select(Game).where(Game.game_number == game_data["game_number"], Game.season == season)
             existing_game = session.exec(statement).first()
 
             if existing_game:
@@ -144,9 +145,10 @@ class DataSeeder:
                 date=self._parse_date(game_data["date"]),
                 start_time=self._parse_datetime(game_data["start_time"]),
                 location=game_data["location"],
-                home_team=game_data.get("home_team"),  # NEW FIELD
-                away_team=game_data.get("away_team"),  # NEW FIELD
+                home_team=game_data.get("home_team"),
+                away_team=game_data.get("away_team"),
                 attendance=game_data.get("attendance"),
+                season=season,
             )
             session.add(game)
             games_added += 1

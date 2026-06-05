@@ -5,7 +5,7 @@ Configuration constants for the HoopQueens db application.
 from pathlib import Path
 
 # Current season - update this each year
-CURRENT_SEASON = 2025
+CURRENT_SEASON = 2026
 
 # Database configuration
 # Get the project root directory (where this config.py file is located)

@@ -3,11 +3,12 @@
 # READ MORE HERE https://www.w3schools.com/git/git_ignore.asp
 
 .venv
+.claude/
 
-**/__pycache__/ 
+**/__pycache__/
 **/*.py[cod]
 
-.env 
+.env
 .env.local
 
 .DS_Store

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from sqlalchemy import UniqueConstraint
 from sqlmodel import Field as SQLField
 from sqlmodel import Relationship, SQLModel
 
@@ -47,8 +48,10 @@ class Player(SQLModel, table=True):
 class Game(SQLModel, table=True):
     """Basketball game details"""
 
+    __table_args__ = (UniqueConstraint("game_number", "season"),)
+
     id: Optional[int] = SQLField(default=None, primary_key=True, description="Game ID")
-    game_number: int = SQLField(unique=True, description="Game number in season")
+    game_number: int = SQLField(description="Game number in season")
     date: datetime = SQLField(description="Game date")
     start_time: datetime = SQLField(description="Start time")
     location: Optional[str] = SQLField(None, description="Venue")
